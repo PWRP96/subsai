@@ -38,12 +38,20 @@ td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowra
 #app:not([hidden]) { display: grid; gap: 14px; }
 .stats { display: flex; gap: 22px; flex-wrap: wrap; }
 .stats b { font: 600 22px "Nunito"; display: block; }
+.fblist { display: grid; gap: 8px; }
+.fb { padding: 12px 14px; border-radius: 16px; background: rgb(127 127 127 / 0.08); display: grid; gap: 4px; }
+.fb.done { opacity: .5; }
+.fb .top { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.fb .kind { font-size: 12px; padding: 1px 9px; border-radius: 999px; background: rgb(127 127 127 / 0.16); color: var(--text); }
+.fb .kind.bug { background: rgb(255 69 58 / .18); } .fb .kind.idea { background: rgb(255 214 10 / .2); }
+.fb .text { white-space: pre-wrap; font-size: 14px; user-select: text; }
+.fb .acts { display: flex; gap: 4px; margin-left: auto; }
 @media (max-width: 560px) { form { grid-template-columns: 1fr; } .hide-sm { display: none; } }
 </style>
 </head>
 <body>
 <main>
-  <h1><img src="logo.svg" alt="" /> แอดมินผู้สนับสนุน</h1>
+  <h1><img src="logo.svg" alt="" /> แอดมินซับใส</h1>
 
   <div class="card" id="login">
     <h2>เข้าสู่ระบบ</h2>
@@ -56,6 +64,10 @@ td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowra
 
   <div id="app" hidden>
     <div class="card stats" id="stats"></div>
+    <div class="card">
+      <h2>ความเห็นจากผู้ใช้ <span class="muted" id="fbcount"></span></h2>
+      <div id="fblist" class="fblist"></div>
+    </div>
     <div class="card">
       <h2>เพิ่มยอดพร้อมเพย์</h2>
       <form id="af">
@@ -95,7 +107,29 @@ async function call(method, path, body) {
   return d;
 }
 
+const KIND = { bug: "🐞 ปัญหา", idea: "💡 ฟีเจอร์", other: "💬 อื่นๆ" };
+async function loadFeedback() {
+  const { feedback } = await call("GET", "/admin/feedback");
+  const open = feedback.filter((f) => !f.done).length;
+  $("fbcount").textContent = feedback.length ? `ยังไม่ได้จัดการ ${open} / ${feedback.length}` : "";
+  $("fblist").innerHTML = feedback.map((f) => `<div class="fb ${f.done ? "done" : ""}">
+    <div class="top"><span class="kind ${esc(f.kind)}">${KIND[f.kind] || esc(f.kind)}</span>
+      <span>${new Date(f.created_at).toLocaleString("th-TH", { dateStyle: "medium", timeStyle: "short" })}</span>
+      ${f.app_version ? `<span>v${esc(f.app_version)}</span>` : ""}
+      <span class="acts"><button class="soft" style="padding:3px 10px;font-size:12px" data-done="${f.id}">${f.done ? "เปิดใหม่" : "เสร็จแล้ว ✓"}</button><button class="del" data-fdel="${f.id}">ลบ</button></span></div>
+    <div class="text">${esc(f.message)}</div>
+    ${f.contact ? `<div class="muted">ติดต่อกลับ: ${esc(f.contact)}</div>` : ""}</div>`).join("") || `<p class="muted">ยังไม่มีความเห็น</p>`;
+}
+$("fblist").onclick = async (e) => {
+  const d = e.target.dataset;
+  if (d.done) await call("POST", `/admin/feedback/${d.done}`);
+  else if (d.fdel && confirm("ลบความเห็นนี้?")) await call("DELETE", `/admin/feedback/${d.fdel}`);
+  else return;
+  await loadFeedback();
+};
+
 async function load() {
+  loadFeedback().catch(() => {});
   const { donations } = await call("GET", "/admin/donations");
   const thb = donations.reduce((s, d) => s + d.amount_thb, 0);
   const people = new Set(donations.filter((d) => !d.anonymous).map((d) => d.name.trim().toLowerCase())).size + donations.filter((d) => d.anonymous).length;

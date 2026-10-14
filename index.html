@@ -119,6 +119,19 @@ h2 { font: 600 30px "Mitr"; text-align: center; margin-bottom: 6px; }
 .tiers-legend { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: -14px 0 22px; font-size: 13px; color: var(--muted); }
 
 .feedback { padding: 28px; text-align: center; display: grid; gap: 12px; justify-items: center; }
+.fbform { width: 100%; max-width: 560px; display: grid; gap: 10px; margin-top: 6px; text-align: left; }
+.fbform textarea, .fbform input { font: inherit; color: var(--text); background: rgb(127 127 127 / 0.12); border: 0; border-radius: 16px; padding: 12px 14px; width: 100%; resize: vertical; outline: none; transition: box-shadow .25s, background .25s; }
+.fbform textarea:focus, .fbform input:focus { background: rgb(127 127 127 / 0.16); box-shadow: 0 0 0 2px var(--accent); }
+.fbform .btn { justify-self: center; }
+.kinds { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.kinds input { position: absolute; opacity: 0; pointer-events: none; }
+.kinds span { display: inline-block; padding: 7px 14px; border-radius: 999px; font-size: 14px; cursor: pointer; background: var(--glass); box-shadow: inset 0 0 0 1px var(--rim); transition: transform .4s var(--spring), background .25s, color .25s; }
+.kinds span:hover { transform: translateY(-2px); }
+.kinds input:checked + span { background: var(--accent); color: #fff; box-shadow: 0 8px 20px -8px var(--accent); transform: scale(1.05); }
+.hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; }
+.fbmsg { text-align: center; font-size: 14px; min-height: 20px; }
+.fbmsg.ok { color: var(--ok); animation: heroIn .5s var(--ease) both; }
+.fbmsg.err { color: #ff453a; }
 footer { padding: 40px 0 56px; text-align: center; color: var(--muted); font-size: 13px; }
 footer a { text-decoration: underline; text-underline-offset: 3px; }
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
@@ -307,8 +320,19 @@ nav .links a.on { color: var(--text); }
   <section id="feedback" class="reveal">
     <div class="feedback glass">
       <h2 style="margin:0">เจอปัญหา หรืออยากได้ฟีเจอร์?</h2>
-      <p class="sub" style="margin:0">บอกได้เลย ทุกข้อความผู้พัฒนาอ่านเอง ในแอปก็มีปุ่มส่งความเห็นที่ ตั้งค่า</p>
-      <a class="btn" id="fb" aria-disabled="true" href="#">💬 ส่งความเห็น</a>
+      <p class="sub" style="margin:0">บอกได้เลย ทุกข้อความผู้พัฒนาอ่านเอง ไม่ต้องล็อกอิน</p>
+      <form id="fbform" class="fbform">
+        <div class="kinds" role="radiogroup">
+          <label><input type="radio" name="kind" value="bug" checked /><span>🐞 เจอปัญหา</span></label>
+          <label><input type="radio" name="kind" value="idea" /><span>💡 อยากได้ฟีเจอร์</span></label>
+          <label><input type="radio" name="kind" value="other" /><span>💬 อื่นๆ</span></label>
+        </div>
+        <textarea name="message" rows="4" maxlength="4000" required placeholder="เล่าให้ฟังหน่อย เช่น ทำอะไรอยู่ แล้วเกิดอะไรขึ้น"></textarea>
+        <input name="contact" maxlength="200" placeholder="ช่องทางติดต่อกลับ (ไม่บังคับ) เช่น อีเมล / LINE / IG" />
+        <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <button class="btn" id="fbsend">💬 ส่งความเห็น</button>
+        <p class="fbmsg" id="fbmsg" aria-live="polite"></p>
+      </form>
     </div>
   </section>
 
@@ -357,7 +381,28 @@ const ago = (iso) => {
 })();
 
 // Support links.
-if (C.feedback) enable($("fb"), C.feedback);
+// Feedback goes straight to the supporters API (stored for the admin page).
+$("fbform").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target, msg = $("fbmsg"), btn = $("fbsend");
+  const data = Object.fromEntries(new FormData(f));
+  data.app_version = new URLSearchParams(location.search).get("v") || "";
+  if (!C.api) { msg.className = "fbmsg err"; msg.textContent = "ยังเปิดรับความเห็นไม่ได้ ลองใหม่เร็วๆ นี้"; return; }
+  btn.setAttribute("aria-disabled", "true");
+  msg.className = "fbmsg"; msg.textContent = "กำลังส่ง…";
+  try {
+    const r = await fetch(`${C.api.replace(/\/$/, "")}/feedback`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    if (!r.ok) throw new Error();
+    f.reset();
+    msg.className = "fbmsg ok"; msg.textContent = "ได้รับแล้ว ขอบคุณมากครับ 🙏";
+    const b = btn.getBoundingClientRect();
+    if (typeof confetti === "function") confetti(b.left + b.width / 2, b.top);
+  } catch {
+    msg.className = "fbmsg err"; msg.textContent = "ส่งไม่สำเร็จ ลองใหม่อีกครั้งนะ";
+  } finally {
+    btn.removeAttribute("aria-disabled");
+  }
+});
 $("ppbox").innerHTML = C.promptpay ? `<img class="qr card" src="${esc(C.promptpay)}" alt="QR พร้อมเพย์" />` : `<div class="qr empty">QR พร้อมเพย์</div>`;
 $("ppname").textContent = C.promptpayName || "";
 
@@ -493,7 +538,7 @@ function tilt(el, max) {
     el.style.setProperty("--ry", "0deg");
   });
 }
-document.querySelectorAll(".feat, .support .card, .feedback").forEach((el) => tilt(el, el.classList.contains("feat") ? 8 : 4));
+document.querySelectorAll(".feat, .support .card").forEach((el) => tilt(el, el.classList.contains("feat") ? 8 : 4));
 
 // Buttons: ripple on press, gentle magnet on hover.
 document.addEventListener("pointerdown", (e) => {
