@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>ซับใส · แอดมิน</title>
+<link rel="icon" href="logo.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+:root { --bg: #050608; --text: #f5f5f7; --muted: #98989d; --glass: rgb(255 255 255 / 0.06); --rim: rgb(255 255 255 / 0.12); --accent: #0a84ff; --danger: #ff453a; }
+@media (prefers-color-scheme: light) { :root { --bg: #f4f5f8; --text: #1d1d1f; --muted: #6e6e73; --glass: rgb(255 255 255 / 0.7); --rim: rgb(0 0 0 / 0.08); --accent: #007aff; } }
+* { box-sizing: border-box; margin: 0; }
+body { background: var(--bg); color: var(--text); font: 400 15px/1.5 "Nunito", "Mitr", system-ui, sans-serif; padding: 24px 16px 60px; }
+main { max-width: 760px; margin: 0 auto; display: grid; gap: 14px; }
+h1 { font: 500 22px "Mitr"; display: flex; align-items: center; gap: 10px; }
+h1 img { width: 30px; }
+.card { background: var(--glass); border-radius: 22px; padding: 18px; box-shadow: inset 0 0 0 1px var(--rim); }
+.card h2 { font: 500 16px "Mitr"; margin-bottom: 12px; }
+form { display: grid; gap: 10px; grid-template-columns: 1fr 140px; }
+label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+input[type=text], input[type=number], input[type=password], input[type=date] {
+  font: inherit; color: var(--text); background: rgb(127 127 127 / 0.12); border: 0; border-radius: 12px; padding: 10px 12px; width: 100%;
+}
+.full { grid-column: 1 / -1; }
+.check { display: flex; align-items: center; gap: 8px; color: var(--text); font-size: 14px; }
+button { font: 600 15px "Nunito", "Mitr"; border: 0; border-radius: 999px; padding: 10px 18px; cursor: pointer; background: var(--accent); color: #fff; }
+button.soft { background: rgb(127 127 127 / 0.16); color: var(--text); }
+button.del { background: transparent; color: var(--danger); padding: 4px 10px; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; padding: 6px 8px; }
+td { padding: 8px; border-top: 1px solid var(--rim); vertical-align: top; }
+td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.src { font-size: 11px; padding: 1px 8px; border-radius: 999px; background: rgb(127 127 127 / 0.16); }
+.muted { color: var(--muted); font-size: 13px; }
+.msg { min-height: 20px; font-size: 13px; }
+.err { color: var(--danger); }
+#app:not([hidden]) { display: grid; gap: 14px; }
+.stats { display: flex; gap: 22px; flex-wrap: wrap; }
+.stats b { font: 600 22px "Nunito"; display: block; }
+@media (max-width: 560px) { form { grid-template-columns: 1fr; } .hide-sm { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1><img src="logo.svg" alt="" /> แอดมินผู้สนับสนุน</h1>
+
+  <div class="card" id="login">
+    <h2>เข้าสู่ระบบ</h2>
+    <form id="lf">
+      <label class="full">รหัสแอดมิน (ตั้งไว้ใน Cloudflare)<input type="password" id="pw" autocomplete="current-password" /></label>
+      <button class="full">เข้าสู่ระบบ</button>
+    </form>
+    <p class="msg" id="lmsg"></p>
+  </div>
+
+  <div id="app" hidden>
+    <div class="card stats" id="stats"></div>
+    <div class="card">
+      <h2>เพิ่มยอดพร้อมเพย์</h2>
+      <form id="af">
+        <label>ชื่อที่จะขึ้นกระดาน<input type="text" id="name" maxlength="60" placeholder="ตามบันทึกช่วยจำตอนโอน" /></label>
+        <label>จำนวน (บาท)<input type="number" id="amount" min="1" step="any" required /></label>
+        <label>วันที่โอน<input type="date" id="date" /></label>
+        <label>ข้อความ (ไม่บังคับ)<input type="text" id="message" maxlength="280" /></label>
+        <label class="check full"><input type="checkbox" id="anon" /> ไม่ออกนาม (ขึ้นว่า “ผู้ไม่ประสงค์ออกนาม”)</label>
+        <button class="full">เพิ่ม</button>
+      </form>
+      <p class="msg" id="amsg"></p>
+    </div>
+    <div class="card">
+      <h2>รายการทั้งหมด</h2>
+      <table><thead><tr><th>วันที่</th><th>ชื่อ</th><th class="hide-sm">ข้อความ</th><th>ยอด</th><th></th></tr></thead><tbody id="list"></tbody></table>
+      <p class="muted" style="margin-top:10px">หน้าเว็บสาธารณะแสดงชื่อ ยอดรวมของแต่ละคน อันดับ และระดับ</p>
+      <p style="margin-top:10px"><button class="soft" id="logout">ออกจากระบบ</button></p>
+    </div>
+  </div>
+</main>
+
+<script src="config.js"></script>
+<script>
+const C = window.SUBSAI || {};
+const API = (C.api || "").replace(/\/$/, "");
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+let pw = sessionStorage.getItem("subsai.admin") || "";
+
+async function call(method, path, body) {
+  const r = await fetch(API + path, {
+    method, headers: { Authorization: `Bearer ${pw}`, ...(body ? { "Content-Type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(r.status === 401 ? "รหัสไม่ถูกต้อง" : d.error || r.status);
+  return d;
+}
+
+async function load() {
+  const { donations } = await call("GET", "/admin/donations");
+  const thb = donations.reduce((s, d) => s + d.amount_thb, 0);
+  const people = new Set(donations.filter((d) => !d.anonymous).map((d) => d.name.trim().toLowerCase())).size + donations.filter((d) => d.anonymous).length;
+  $("stats").innerHTML = `<div><b>${thb.toLocaleString("th-TH", { maximumFractionDigits: 0 })} ฿</b><span class="muted">ยอดรวมโดยประมาณ</span></div>
+    <div><b>${people}</b><span class="muted">ผู้สนับสนุน</span></div><div><b>${donations.length}</b><span class="muted">รายการ</span></div>`;
+  $("list").innerHTML = donations.map((d) => `<tr>
+    <td>${new Date(d.created_at).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "2-digit" })}</td>
+    <td>${d.anonymous ? `<i class="muted">ไม่ออกนาม</i>${d.name ? ` (${esc(d.name)})` : ""}` : esc(d.name)} </td>
+    <td class="hide-sm muted">${esc(d.message)}</td>
+    <td class="n">${d.currency === "THB" ? "" : `${d.amount} ${esc(d.currency)} ≈ `}${Math.round(d.amount_thb).toLocaleString("th-TH")} ฿</td>
+    <td><button class="del" data-id="${d.id}">ลบ</button></td></tr>`).join("") || `<tr><td colspan="5" class="muted">ยังไม่มีรายการ</td></tr>`;
+}
+
+async function enter() {
+  try {
+    await load();
+    sessionStorage.setItem("subsai.admin", pw);
+    $("login").hidden = true;
+    $("app").hidden = false;
+  } catch (e) {
+    $("lmsg").innerHTML = `<span class="err">${esc(e.message)}</span>`;
+  }
+}
+
+$("lf").onsubmit = (e) => { e.preventDefault(); pw = $("pw").value; enter(); };
+$("logout").onclick = () => { sessionStorage.removeItem("subsai.admin"); location.reload(); };
+$("af").onsubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await call("POST", "/admin/donations", {
+      name: $("name").value, amount: Number($("amount").value), anonymous: $("anon").checked,
+      message: $("message").value, date: $("date").value || undefined,
+    });
+    $("af").reset();
+    $("amsg").textContent = "เพิ่มแล้ว ✓ (หน้าเว็บอัปเดตภายใน 1 นาที)";
+    await load();
+  } catch (err) {
+    $("amsg").innerHTML = `<span class="err">${esc(err.message)}</span>`;
+  }
+};
+$("list").onclick = async (e) => {
+  const id = e.target.dataset?.id;
+  if (!id || !confirm("ลบรายการนี้?")) return;
+  await call("DELETE", `/admin/donations/${id}`);
+  await load();
+};
+if (!API) $("lmsg").textContent = "ยังไม่ได้ใส่ที่อยู่ API ใน config.js";
+else if (pw) enter();
+</script>
+</body>
+</html>

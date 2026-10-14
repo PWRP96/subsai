@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ซับใส · SubSai</title>
+<meta name="description" content="ทำซับไทยอัตโนมัติ ตรงจังหวะทุกคำ ทำงานในเครื่องคุณทั้งหมด ฟรี" />
+<link rel="icon" href="logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #050608; --text: #f5f5f7; --muted: #98989d; --glass: rgb(255 255 255 / 0.06); --rim: rgb(255 255 255 / 0.12);
+  --accent: #0a84ff; --gold: #ffd60a; --silver: #d1d1d6; --bronze: #e8a06a; --ok: #30d158;
+}
+@media (prefers-color-scheme: light) {
+  :root { --bg: #f4f5f8; --text: #1d1d1f; --muted: #6e6e73; --glass: rgb(255 255 255 / 0.62); --rim: rgb(0 0 0 / 0.08); --accent: #007aff; --gold: #d4a300; --silver: #8e8e93; --bronze: #b8743f; }
+}
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text); font: 400 16px/1.6 "Nunito", "Mitr", system-ui, sans-serif;
+  min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(40% 35% at 20% 15%, rgb(10 132 255 / 0.35), transparent 70%),
+    radial-gradient(35% 30% at 85% 25%, rgb(94 92 230 / 0.3), transparent 70%),
+    radial-gradient(40% 35% at 60% 90%, rgb(90 200 250 / 0.18), transparent 70%);
+  filter: blur(30px);
+}
+a { color: inherit; text-decoration: none; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+.glass {
+  background: var(--glass); border-radius: 26px;
+  box-shadow: inset 0 0 0 1px var(--rim), inset 1px 1px 0 -0.5px rgb(255 255 255 / 0.35), 0 20px 50px -24px rgb(0 0 0 / 0.5);
+  backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+nav { position: sticky; top: 12px; z-index: 10; margin-top: 12px; }
+nav .bar { display: flex; align-items: center; gap: 8px; padding: 8px 10px 8px 14px; border-radius: 999px; }
+nav .brand { display: flex; align-items: center; gap: 10px; font: 600 17px "Mitr"; margin-right: auto; }
+nav .brand img { width: 30px; height: 30px; }
+nav .links a { padding: 6px 12px; border-radius: 999px; font-size: 14px; color: var(--muted); }
+nav .links a:hover { color: var(--text); background: var(--glass); }
+@media (max-width: 640px) { nav .links a:not(.cta) { display: none; } }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer;
+  border-radius: 999px; padding: 12px 22px; font: 500 16px "Nunito", "Mitr"; color: #fff; background: var(--accent);
+  box-shadow: inset 1px 1px 0 -0.5px rgb(255 255 255 / 0.7), 0 10px 26px -8px var(--accent); transition: transform .15s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: scale(.97); }
+.btn.soft { background: var(--glass); color: var(--text); box-shadow: inset 0 0 0 1px var(--rim); }
+.btn[aria-disabled="true"] { opacity: .55; pointer-events: none; }
+.cta { padding: 7px 16px !important; font-size: 14px; color: #fff !important; background: var(--accent) !important; }
+
+.hero { text-align: center; padding: 72px 0 40px; }
+.hero img.logo { width: 108px; height: 108px; filter: drop-shadow(0 18px 40px rgb(10 132 255 / 0.45)); animation: float 6s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-8px); } }
+.hero h1 { font: 600 clamp(34px, 6vw, 58px)/1.15 "Mitr"; letter-spacing: -.01em; margin: 22px 0 14px; }
+.hero h1 span { background: linear-gradient(120deg, #5ac8fa, #0a84ff 45%, #5e5ce6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p.lead { color: var(--muted); font-size: 18px; max-width: 560px; margin: 0 auto 28px; }
+.hero .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.hero .meta { margin-top: 14px; font-size: 13px; color: var(--muted); }
+.pills { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+.pill { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: var(--glass); box-shadow: inset 0 0 0 1px var(--rim); }
+
+section { padding: 48px 0; }
+h2 { font: 600 30px "Mitr"; text-align: center; margin-bottom: 6px; }
+.sub { text-align: center; color: var(--muted); margin-bottom: 28px; }
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.feat { padding: 22px; }
+.feat .ic { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; font-size: 20px; background: rgb(10 132 255 / .16); margin-bottom: 12px; }
+.feat b { font: 500 17px "Mitr"; display: block; margin-bottom: 4px; }
+.feat p { color: var(--muted); font-size: 14px; }
+.req { display: flex; flex-wrap: wrap; gap: 10px 26px; justify-content: center; padding: 18px 22px; font-size: 14px; color: var(--muted); margin-top: 16px; }
+.req b { color: var(--text); font-weight: 600; }
+.note { margin: 14px auto 0; max-width: 620px; font-size: 13px; color: var(--muted); text-align: center; }
+
+.support { display: grid; gap: 14px; max-width: 420px; margin: 0 auto; }
+.support .card { padding: 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.support .card b { font: 500 19px "Mitr"; }
+.support .card p { color: var(--muted); font-size: 14px; }
+.qr { width: 200px; height: 200px; border-radius: 18px; background: #fff; padding: 10px; object-fit: contain; }
+.qr.card { width: 240px; height: auto; padding: 0; background: none; box-shadow: 0 14px 34px -14px rgb(0 0 0 / .45); }
+.qr.empty { display: grid; place-items: center; color: #8e8e93; font-size: 13px; }
+
+.board { padding: 22px; }
+.podium { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 12px; align-items: end; margin-bottom: 18px; }
+.podium .p { text-align: center; padding: 18px 10px 16px; border-radius: 22px; background: var(--glass); box-shadow: inset 0 0 0 1px var(--rim); min-width: 0; }
+.podium .p.r1 { padding-top: 26px; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--gold) 70%, transparent), 0 16px 40px -18px var(--gold); }
+.podium .medal { font-size: 34px; line-height: 1; }
+.podium .p.r1 .medal { font-size: 44px; }
+.podium .nm { font: 500 16px "Mitr"; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.podium .p.empty { opacity: .45; }
+.rows { display: grid; gap: 6px; }
+.row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 16px; }
+.row:nth-child(odd) { background: var(--glass); }
+.row .rk { width: 28px; text-align: center; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.row .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.anon { color: var(--muted); font-style: italic; }
+.tier { font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.tier.gold { color: #1d1d1f; background: var(--gold); }
+.tier.silver { color: #1d1d1f; background: var(--silver); }
+.tier.bronze { color: #1d1d1f; background: var(--bronze); }
+.times { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.amt { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.row .amt { min-width: 84px; text-align: right; }
+.podium .amt { font-size: 15px; margin: 2px 0 6px; color: var(--text); }
+.podium .r1 .amt { font-size: 18px; background: linear-gradient(120deg, #ffd60a, #ff9f0a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.msg .t .amt { color: var(--text); font-weight: 700; }
+.empty-board { text-align: center; color: var(--muted); padding: 26px 0 10px; }
+.recent { margin-top: 18px; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.msg { padding: 14px 16px; border-radius: 18px; background: var(--glass); box-shadow: inset 0 0 0 1px var(--rim); font-size: 14px; }
+.msg b { font-weight: 600; }
+.msg .t { color: var(--muted); font-size: 12px; }
+.msg q { display: block; margin-top: 4px; }
+.tiers-legend { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: -14px 0 22px; font-size: 13px; color: var(--muted); }
+
+.feedback { padding: 28px; text-align: center; display: grid; gap: 12px; justify-items: center; }
+footer { padding: 40px 0 56px; text-align: center; color: var(--muted); font-size: 13px; }
+footer a { text-decoration: underline; text-underline-offset: 3px; }
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* ---------- motion ---------- */
+:root { --spring: cubic-bezier(.34, 1.56, .64, 1); --ease: cubic-bezier(.2, .8, .2, 1); }
+body::before { display: none; }
+.ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.blob { position: absolute; width: 46vmax; height: 46vmax; border-radius: 50%; filter: blur(70px); opacity: .55;
+  transform: translate3d(calc(var(--px, 0) * var(--k)), calc(var(--py, 0) * var(--k)), 0); transition: transform 1.2s var(--ease); }
+.blob i { position: absolute; inset: 0; border-radius: 50%; animation: drift var(--t) ease-in-out infinite alternate; }
+.blob.a { left: -12vmax; top: -16vmax; --k: 30px; --t: 18s; } .blob.a i { background: radial-gradient(circle, #0a84ff, transparent 65%); }
+.blob.b { right: -14vmax; top: 4vmax; --k: -40px; --t: 22s; } .blob.b i { background: radial-gradient(circle, #5e5ce6, transparent 65%); }
+.blob.c { left: 25vmax; bottom: -22vmax; --k: 20px; --t: 26s; } .blob.c i { background: radial-gradient(circle, #5ac8fa, transparent 65%); opacity: .6; }
+@keyframes drift { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(6vmax, 4vmax) scale(1.12); } 100% { transform: translate(-4vmax, 7vmax) scale(.92); } }
+@media (prefers-color-scheme: light) { .blob { opacity: .32; } }
+
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 30; transform-origin: 0 50%; transform: scaleX(var(--p, 0));
+  background: linear-gradient(90deg, #5ac8fa, #0a84ff, #5e5ce6); box-shadow: 0 0 12px rgb(10 132 255 / .7); }
+
+nav .bar { transition: padding .4s var(--ease), background .4s, box-shadow .4s, transform .4s var(--ease); }
+nav.scrolled .bar { background: color-mix(in srgb, var(--bg) 62%, transparent); transform: scale(.985); }
+nav .links { position: relative; display: flex; align-items: center; }
+nav .links a { position: relative; z-index: 1; transition: color .25s; }
+nav .ind { position: absolute; z-index: 0; top: 50%; height: 32px; margin-top: -16px; border-radius: 999px; background: var(--glass);
+  box-shadow: inset 0 0 0 1px var(--rim); transition: left .5s var(--spring), width .5s var(--spring), opacity .3s; opacity: 0; pointer-events: none; }
+nav .links a.on { color: var(--text); }
+
+.hero > * { opacity: 0; transform: translateY(22px); filter: blur(10px); animation: heroIn 1s var(--ease) forwards; animation-delay: calc(var(--i, 0) * 90ms + 80ms); }
+@keyframes heroIn { to { opacity: 1; transform: none; filter: none; } }
+.hero img.logo { animation: heroIn 1s var(--ease) forwards, float 6s ease-in-out 1.2s infinite; animation-delay: 80ms, 1.2s; }
+.hero h1 span { background-size: 200% 100%; animation: shimmer 6s linear infinite; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+/* live caption demo */
+.demo { margin: 34px auto 0; max-width: 560px; aspect-ratio: 16 / 9; border-radius: 26px; position: relative; overflow: hidden;
+  background: radial-gradient(120% 90% at 30% 20%, #23305a, #0b0d16 70%); box-shadow: inset 0 0 0 1px var(--rim), 0 40px 80px -30px rgb(10 132 255 / .45); }
+.demo-wrap { perspective: 900px; }
+.demo-in { transform: rotateX(var(--dx, 0deg)) rotateY(var(--dy, 0deg)); transition: transform .6s var(--ease); }
+.demo::before { content: ""; position: absolute; inset: 0; background:
+  radial-gradient(40% 50% at 70% 40%, rgb(255 159 10 / .25), transparent 70%), radial-gradient(30% 40% at 25% 70%, rgb(94 92 230 / .35), transparent 70%);
+  animation: drift 14s ease-in-out infinite alternate; }
+.demo .wave { position: absolute; left: 6%; right: 6%; top: 24%; height: 34%; display: flex; align-items: center; gap: 3px; opacity: .55; }
+.demo .wave span { flex: 1; border-radius: 3px; background: linear-gradient(#5ac8fa, #0a84ff); height: 20%; animation: bar 1.1s ease-in-out infinite alternate; animation-delay: calc(var(--j) * -73ms); }
+@keyframes bar { to { height: var(--h); } }
+.demo .rec { position: absolute; top: 14px; left: 16px; font: 700 12px Nunito; color: #fff; display: flex; align-items: center; gap: 6px; opacity: .85; }
+.demo .rec::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #ff453a; animation: blink 1.2s infinite; }
+@keyframes blink { 50% { opacity: .2; } }
+.demo .cap { position: absolute; left: 0; right: 0; bottom: 13%; text-align: center; font: 600 clamp(20px, 4.2vw, 30px)/1.3 "Mitr"; color: #fff;
+  text-shadow: 0 2px 0 #000, 0 0 18px rgb(0 0 0 / .6); padding: 0 16px; }
+.demo .cap .w { display: inline-block; opacity: 0; transform: translateY(14px) scale(.9); transition: opacity .25s, transform .45s var(--spring), color .2s; }
+.demo .cap .w.show { opacity: 1; transform: none; }
+.demo .cap .w.now { color: #ffd60a; transform: scale(1.12); }
+.demo .cap.out .w { opacity: 0; transform: translateY(-10px); transition-duration: .3s; }
+
+/* scroll reveal with stagger */
+.rv { opacity: 0; transform: translateY(26px) scale(.98); filter: blur(8px); transition: opacity .8s var(--ease), transform .9s var(--spring), filter .8s var(--ease); transition-delay: var(--d, 0ms); }
+.rv.in { opacity: 1; transform: none; filter: none; }
+
+/* tilt + spotlight */
+.tilt { position: relative; }
+.tilt.in { transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px)); transition: transform .5s var(--ease), opacity .8s var(--ease), filter .8s var(--ease); transition-delay: 0ms; }
+.tilt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / .14), transparent 60%); }
+.tilt:hover { --lift: -4px; }
+.tilt:hover::after { opacity: 1; }
+.feat .ic { transition: transform .6s var(--spring); }
+.feat:hover .ic { transform: rotate(-8deg) scale(1.15); }
+
+/* buttons */
+.btn { position: relative; overflow: hidden; transition: transform .4s var(--spring), box-shadow .3s; transform: translate(var(--mx2, 0px), var(--my2, 0px)); }
+.btn:hover { transform: translate(var(--mx2, 0px), calc(var(--my2, 0px) - 2px)); }
+.btn:active { transform: scale(.94); transition-duration: .1s; }
+.btn.shine::before { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .45), transparent); animation: sweep 3.6s var(--ease) infinite 1.5s; }
+@keyframes sweep { 0% { left: -60%; } 45%, 100% { left: 130%; } }
+.ripple { position: absolute; border-radius: 50%; pointer-events: none; background: rgb(255 255 255 / .45); transform: scale(0); animation: ripple .7s var(--ease) forwards; }
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+.pill { transition: transform .4s var(--spring), background .3s; }
+.pill:hover { transform: translateY(-3px) scale(1.06); }
+
+/* podium + board */
+.podium .p { position: relative; opacity: 0; transform: translateY(40px) scale(.9); }
+.board.in .podium .p { animation: rise .9s var(--spring) forwards; }
+.board.in .podium .r1 { animation-delay: .35s; } .board.in .podium .r2 { animation-delay: .15s; } .board.in .podium .r3 { animation-delay: .5s; }
+@keyframes rise { to { opacity: 1; transform: none; } }
+.podium .medal { display: inline-block; }
+.board.in .podium .r1 .medal { animation: bob 2.8s ease-in-out infinite 1.4s; }
+@keyframes bob { 50% { transform: translateY(-6px) rotate(6deg); } }
+.podium .r1 { overflow: hidden; cursor: pointer; }
+.podium .r1::before { content: ""; position: absolute; inset: -50%; background: conic-gradient(from 0deg, transparent, rgb(255 214 10 / .18), transparent 30%); animation: spin 6s linear infinite; pointer-events: none; }
+@keyframes spin { to { transform: rotate(1turn); } }
+.row { opacity: 0; transform: translateX(-16px); transition: opacity .5s var(--ease), transform .6s var(--spring), background .2s; transition-delay: var(--d, 0ms); }
+.board.in .row { opacity: 1; transform: none; }
+.row:hover { background: rgb(127 127 127 / .14) !important; }
+.confetti { position: fixed; width: 8px; height: 12px; border-radius: 2px; pointer-events: none; z-index: 60; animation: fall var(--t) cubic-bezier(.2, .6, .4, 1) forwards; }
+@keyframes fall { to { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; } }
+
+/* QR lightbox */
+.qr.card { cursor: zoom-in; transition: transform .5s var(--spring); }
+.qr.card:hover { transform: scale(1.03) rotate(-1deg); }
+.lightbox { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: rgb(0 0 0 / .55); backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px); opacity: 0; transition: opacity .35s; padding: 16px; cursor: zoom-out; }
+.lightbox.open { opacity: 1; }
+.lightbox img { max-height: 88vh; max-width: 100%; border-radius: 24px; transform: scale(.85) translateY(20px); transition: transform .6s var(--spring); box-shadow: 0 40px 100px -20px #000; }
+.lightbox.open img { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .hero > *, .rv, .row, .podium .p, .demo .cap .w { opacity: 1 !important; transform: none !important; filter: none !important; }
+}
+
+@media (max-width: 520px) { .podium { gap: 6px; } .podium .nm { font-size: 13px; } .times { display: none; } }
+</style>
+</head>
+<body>
+<div class="ambient"><div class="blob a"><i></i></div><div class="blob b"><i></i></div><div class="blob c"><i></i></div></div>
+<div class="progress"></div>
+<div class="wrap">
+  <nav><div class="bar glass">
+    <a class="brand" href="#"><img src="logo.svg" alt="" /> ซับใส</a>
+    <div class="links">
+      <a href="#features">ฟีเจอร์</a>
+      <a href="#support">สนับสนุน</a>
+      <a href="#supporters">ผู้สนับสนุน</a>
+      <a href="#feedback">ส่งความเห็น</a>
+      <a class="cta" href="#download">ดาวน์โหลด</a>
+    </div>
+  </div></nav>
+
+  <header class="hero" id="download">
+    <img class="logo" src="logo.svg" alt="ซับใส" />
+    <h1>ซับไทยอัตโนมัติ<br /><span>ตรงจังหวะทุกคำ</span></h1>
+    <p class="lead">ลากวิดีโอมาวาง ได้ซับไทยพร้อมสไตล์สวยๆ แก้ง่าย แล้วส่งออกไปลงโซเชียลหรือแก้ต่อใน CapCut ทำงานในเครื่องคุณทั้งหมด</p>
+    <div class="actions">
+      <a class="btn" id="dl" aria-disabled="true" href="#">⬇ ดาวน์โหลดสำหรับ Windows</a>
+      <a class="btn soft" href="#support">♥ สนับสนุนผู้พัฒนา</a>
+    </div>
+    <div class="meta" id="dlmeta">กำลังเตรียมเวอร์ชันแรก</div>
+    <div class="pills"><span class="pill">ฟรี</span><span class="pill">ใช้ออฟไลน์ได้</span><span class="pill">ไม่ต้องสมัครสมาชิก</span><span class="pill">อัปเดตในแอป</span></div>
+    <div class="demo-wrap" aria-hidden="true"><div class="demo-in"><div class="demo"><div class="rec">REC</div><div class="wave"></div><div class="cap"></div></div></div></div>
+  </header>
+
+  <section id="features" class="reveal">
+    <h2>ทำอะไรได้บ้าง</h2>
+    <p class="sub">ออกแบบมาสำหรับคนทำคลิปและคนตัดต่อ</p>
+    <div class="grid">
+      <div class="feat glass"><div class="ic">🎯</div><b>ถอดเสียงไทยแม่น</b><p>ใช้โมเดล Typhoon Whisper ที่ฝึกมากับภาษาไทย คำไหนไม่มั่นใจจะไฮไลต์ให้ตรวจ</p></div>
+      <div class="feat glass"><div class="ic">⏱</div><b>ตรงจังหวะทุกคำ</b><p>จับเวลาระดับคำ ตัดบรรทัดตามหลักภาษาไทย ไม่ตัดกลางคำ</p></div>
+      <div class="feat glass"><div class="ic">🎨</div><b>สไตล์และแอนิเมชัน</b><p>ไฮไลต์คำที่กำลังพูด สีแบรนด์ประจำช่อง ลายน้ำโลโก้ เส้นขอบ TikTok / Reels / Shorts</p></div>
+      <div class="feat glass"><div class="ic">🗣</div><b>แยกผู้พูด คนละสี</b><p>คลิปคุยกันหลายคน แยกให้อัตโนมัติ ซับแต่ละคนสีไม่เหมือนกัน</p></div>
+      <div class="feat glass"><div class="ic">✂️</div><b>ตัดช่วงเงียบ</b><p>ตัดช่วงที่ไม่ได้พูดและคำ เอ่อ / อ่า ออกให้ ซับเลื่อนตามเอง</p></div>
+      <div class="feat glass"><div class="ic">🎬</div><b>ส่งไป CapCut</b><p>ได้วิดีโอ + ไฟล์ .srt ไปแก้ต่อใน CapCut คอม / iPad หรือซับพื้นใสสำหรับโปรแกรมตัดต่อ</p></div>
+    </div>
+    <div class="req glass">
+      <span><b>Windows</b> 10 / 11 (64-bit)</span>
+      <span><b>RAM</b> 8GB ขึ้นไป</span>
+      <span><b>การ์ดจอ</b> ไม่จำเป็น (มีแล้วเร็วขึ้น)</span>
+      <span><b>พื้นที่</b> ประมาณ 3GB</span>
+    </div>
+    <p class="note">ติดตั้งครั้งแรกถ้า Windows ขึ้นหน้าจอ “Windows protected your PC” ให้กด <b>More info</b> → <b>Run anyway</b> (แอปยังไม่มีใบรับรองแบบเสียเงิน)</p>
+  </section>
+
+  <section id="support" class="reveal">
+    <h2>สนับสนุนผู้พัฒนา</h2>
+    <p class="sub">ซับใสฟรีและจะฟรีต่อไป ทุกการสนับสนุนช่วยให้มีเวอร์ชันใหม่เร็วขึ้น</p>
+    <div class="support">
+      <div class="card glass">
+        <b>พร้อมเพย์</b>
+        <div id="ppbox"></div>
+        <p id="ppname"></p>
+        <p>สแกนด้วยแอปธนาคารไหนก็ได้ ใส่จำนวนเท่าไรก็ได้<br />อยากให้ชื่อขึ้นกระดาน ใส่ชื่อในบันทึกช่วยจำตอนโอน<br />ไม่ใส่ชื่อ = ผู้ไม่ประสงค์ออกนาม</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="supporters" class="reveal">
+    <h2>กระดานผู้สนับสนุน</h2>
+    <p class="sub" id="bcount">ขอบคุณทุกคนที่ช่วยให้ซับใสไปต่อ</p>
+    <div class="tiers-legend"><span class="tier gold">ทอง</span><span class="tier silver">เงิน</span><span class="tier bronze">ทองแดง</span><span>ทอง 1,000 บาทขึ้นไป · เงิน 300 บาทขึ้นไป</span></div>
+    <div class="board glass" id="board"><div class="empty-board">กำลังโหลด…</div></div>
+    <div class="recent" id="recent"></div>
+  </section>
+
+  <section id="feedback" class="reveal">
+    <div class="feedback glass">
+      <h2 style="margin:0">เจอปัญหา หรืออยากได้ฟีเจอร์?</h2>
+      <p class="sub" style="margin:0">บอกได้เลย ทุกข้อความผู้พัฒนาอ่านเอง ในแอปก็มีปุ่มส่งความเห็นที่ ตั้งค่า</p>
+      <a class="btn" id="fb" aria-disabled="true" href="#">💬 ส่งความเห็น</a>
+    </div>
+  </section>
+
+  <footer>
+    © ซับใส · SubSai ·
+    ใช้ <a href="https://huggingface.co/typhoon-ai/typhoon-whisper-turbo" target="_blank" rel="noopener">Typhoon Whisper</a> (MIT),
+    <a href="https://github.com/ggml-org/whisper.cpp" target="_blank" rel="noopener">whisper.cpp</a>,
+    <a href="https://www.gyan.dev/ffmpeg/builds/" target="_blank" rel="noopener">FFmpeg</a> (GPLv3) และ
+    <a href="https://github.com/modelscope/3D-Speaker" target="_blank" rel="noopener">3D-Speaker</a> (Apache-2.0)
+  </footer>
+</div>
+
+<script src="config.js"></script>
+<script>
+const C = window.SUBSAI || {};
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const enable = (el, href) => { el.href = href; el.removeAttribute("aria-disabled"); el.target = "_blank"; el.rel = "noopener"; };
+const TIER = { gold: "ทอง", silver: "เงิน", bronze: "ทองแดง" };
+const baht = (n) => `${Number(n || 0).toLocaleString("th-TH")} บาท`;
+const ago = (iso) => {
+  const s = (Date.now() - new Date(iso)) / 1000;
+  if (s < 3600) return `${Math.max(1, Math.round(s / 60))} นาทีที่แล้ว`;
+  if (s < 86400) return `${Math.round(s / 3600)} ชั่วโมงที่แล้ว`;
+  if (s < 86400 * 30) return `${Math.round(s / 86400)} วันที่แล้ว`;
+  return new Date(iso).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" });
+};
+
+// Download: the newest release's installer.
+(async () => {
+  const dl = $("dl"), meta = $("dlmeta");
+  if (!C.repo) return;
+  const page = `https://github.com/${C.repo}/releases/latest`;
+  enable(dl, page);
+  dl.removeAttribute("target");
+  try {
+    const r = await fetch(`https://api.github.com/repos/${C.repo}/releases/latest`);
+    if (!r.ok) throw 0;
+    const rel = await r.json();
+    const a = rel.assets.find((x) => /setup\.exe$/i.test(x.name)) || rel.assets.find((x) => /\.exe$/i.test(x.name));
+    if (a) dl.href = a.browser_download_url;
+    meta.textContent = `เวอร์ชัน ${rel.tag_name.replace(/^v/, "")}` + (a ? ` · ${(a.size / 1073741824).toFixed(2)} GB` : "") + ` · ${ago(rel.published_at)}`;
+  } catch {
+    meta.innerHTML = `<a href="${esc(page)}" style="text-decoration:underline">ดูทุกเวอร์ชัน</a>`;
+  }
+})();
+
+// Support links.
+if (C.feedback) enable($("fb"), C.feedback);
+$("ppbox").innerHTML = C.promptpay ? `<img class="qr card" src="${esc(C.promptpay)}" alt="QR พร้อมเพย์" />` : `<div class="qr empty">QR พร้อมเพย์</div>`;
+$("ppname").textContent = C.promptpayName || "";
+
+// Leaderboard.
+const DEMO = {
+  count: 7,
+  total: 4850,
+  supporters: [
+    { rank: 1, name: "พี่บอส ตัดต่อ", amount: 1500, tier: "gold", times: 3 }, { rank: 2, name: "Mint Studio", amount: 1000, tier: "gold", times: 1 },
+    { rank: 3, name: "ผู้ไม่ประสงค์ออกนาม", anonymous: true, amount: 800, tier: "silver", times: 1 }, { rank: 4, name: "น้องฟ้า", amount: 600, tier: "silver", times: 2 },
+    { rank: 5, name: "KenEdit", amount: 500, tier: "bronze", times: 1 }, { rank: 6, name: "ครูต้น", amount: 300, tier: "silver", times: 1 },
+    { rank: 7, name: "ผู้ไม่ประสงค์ออกนาม", anonymous: true, amount: 150, tier: "bronze", times: 1 },
+  ],
+  recent: [
+    { name: "พี่บอส ตัดต่อ", amount: 500, message: "ประหยัดเวลาทำซับไปเยอะมาก ขอบคุณครับ", at: new Date(Date.now() - 5400e3).toISOString() },
+    { name: "น้องฟ้า", amount: 300, message: "รอฟีเจอร์ใหม่นะคะ", at: new Date(Date.now() - 2 * 86400e3).toISOString() },
+    { name: "ผู้ไม่ประสงค์ออกนาม", amount: 800, message: "", at: new Date(Date.now() - 4 * 86400e3).toISOString() },
+  ],
+};
+function render(d) {
+  const nm = (p) => p.anonymous ? `<span class="anon">${esc(p.name)}</span>` : esc(p.name);
+  if (!d.supporters.length) {
+    $("board").innerHTML = `<div class="empty-board">ยังไม่มีผู้สนับสนุน มาเป็นคนแรกเลย ♥</div>`;
+    return;
+  }
+  $("bcount").textContent = `ขอบคุณผู้สนับสนุน ${d.count} คน ยอดรวม ${baht(d.total)} ที่ช่วยให้ซับใสไปต่อ`;
+  $("bcount").dataset.n = d.count;
+  $("bcount").dataset.total = d.total ?? 0;
+  const top = [d.supporters[1], d.supporters[0], d.supporters[2]];
+  const medal = ["🥈", "🥇", "🥉"], cls = ["r2", "r1", "r3"];
+  const podium = top.map((p, i) => p
+    ? `<div class="p ${cls[i]}"><div class="medal">${medal[i]}</div><div class="nm">${nm(p)}</div><div class="amt">${baht(p.amount)}</div><span class="tier ${esc(p.tier)}">${TIER[p.tier] || ""}</span></div>`
+    : `<div class="p ${cls[i]} empty"><div class="medal">${medal[i]}</div><div class="nm">ว่าง</div></div>`).join("");
+  const rows = d.supporters.slice(3).map((p) =>
+    `<div class="row"><span class="rk">${p.rank}</span><span class="nm">${nm(p)}</span>${p.times > 1 ? `<span class="times">${p.times} ครั้ง</span>` : ""}<span class="amt">${baht(p.amount)}</span><span class="tier ${esc(p.tier)}">${TIER[p.tier] || ""}</span></div>`).join("");
+  $("board").innerHTML = `<div class="podium">${podium}</div><div class="rows">${rows}</div>`;
+  $("board").querySelectorAll(".row").forEach((r, i) => r.style.setProperty("--d", `${500 + i * 70}ms`));
+  if ($("board").classList.contains("in")) countUp();
+  $("recent").innerHTML = d.recent.map((m, i) =>
+    `<div class="msg rv" style="--d:${700 + i * 90}ms"><b class="${m.name === "ผู้ไม่ประสงค์ออกนาม" ? "anon" : ""}">${esc(m.name)}</b> <span class="t">สนับสนุน <b class="amt">${baht(m.amount)}</b> · ${ago(m.at)}</span>${m.message ? `<q>${esc(m.message)}</q>` : ""}</div>`).join("");
+  if (typeof watch === "function") watch();
+}
+(async () => {
+  await null; // let the motion code below set up first
+  if (new URLSearchParams(location.search).has("demo")) return render(DEMO);
+  if (!C.api) return render({ count: 0, supporters: [], recent: [] });
+  try {
+    const r = await fetch(`${C.api.replace(/\/$/, "")}/supporters`);
+    render(await r.json());
+  } catch {
+    $("board").innerHTML = `<div class="empty-board">โหลดกระดานไม่ได้ ลองใหม่อีกครั้ง</div>`;
+  }
+})();
+
+// ---------- motion ----------
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const fine = matchMedia("(pointer: fine)").matches;
+
+// Hero entrance stagger.
+[...document.querySelectorAll(".hero > *")].forEach((el, i) => el.style.setProperty("--i", i));
+
+// Scroll progress + compact nav + active section.
+const nav = document.querySelector("nav"), bar = document.querySelector(".progress");
+const links = [...document.querySelectorAll("nav .links a:not(.cta)")];
+const ind = document.createElement("span");
+ind.className = "ind";
+document.querySelector("nav .links").prepend(ind);
+function moveInd(a) {
+  if (!a || !a.offsetWidth) return (ind.style.opacity = 0);
+  ind.style.opacity = 1;
+  ind.style.left = a.offsetLeft + "px";
+  ind.style.width = a.offsetWidth + "px";
+}
+function onScroll() {
+  const h = document.documentElement;
+  bar.style.setProperty("--p", h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight));
+  nav.classList.toggle("scrolled", h.scrollTop > 24);
+  let cur = null;
+  for (const a of links) {
+    const s = document.querySelector(a.getAttribute("href"));
+    if (s && s.getBoundingClientRect().top < innerHeight * 0.45) cur = a;
+  }
+  links.forEach((a) => a.classList.toggle("on", a === cur));
+  moveInd(cur);
+}
+addEventListener("scroll", onScroll, { passive: true });
+addEventListener("resize", onScroll);
+onScroll();
+
+// Ambient blobs and the demo screen follow the pointer a little.
+const amb = document.querySelector(".ambient"), demoIn = document.querySelector(".demo-in");
+if (fine && !still) addEventListener("pointermove", (e) => {
+  const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
+  amb.style.setProperty("--px", x.toFixed(3));
+  amb.style.setProperty("--py", y.toFixed(3));
+  if (demoIn) {
+    demoIn.style.setProperty("--dy", `${x * 10}deg`);
+    demoIn.style.setProperty("--dx", `${-y * 8}deg`);
+  }
+}, { passive: true });
+
+// Staggered reveal of everything below the hero.
+const groups = [".feat", ".req", ".note", ".support .card", ".tiers-legend", ".feedback", "section h2", "section > .sub"];
+groups.forEach((sel) => document.querySelectorAll(sel).forEach((el, i) => {
+  el.classList.add("rv");
+  el.style.setProperty("--d", `${(i % 6) * 80}ms`);
+}));
+document.querySelectorAll(".reveal").forEach((el) => el.classList.remove("reveal"));
+const seen = new IntersectionObserver((es) => es.forEach((e) => {
+  if (!e.isIntersecting) return;
+  e.target.classList.add("in");
+  seen.unobserve(e.target);
+  if (e.target.id === "board") countUp();
+}), { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+function watch() {
+  document.querySelectorAll(".rv:not(.in), #board:not(.in)").forEach((el) => seen.observe(el));
+}
+watch();
+
+// Tilt + spotlight on cards.
+function tilt(el, max) {
+  el.classList.add("tilt");
+  if (!fine || still) return;
+  el.addEventListener("pointermove", (e) => {
+    const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    el.style.setProperty("--ry", `${(x - 0.5) * max}deg`);
+    el.style.setProperty("--rx", `${(0.5 - y) * max}deg`);
+    el.style.setProperty("--mx", `${x * 100}%`);
+    el.style.setProperty("--my", `${y * 100}%`);
+  });
+  el.addEventListener("pointerleave", () => {
+    el.style.setProperty("--rx", "0deg");
+    el.style.setProperty("--ry", "0deg");
+  });
+}
+document.querySelectorAll(".feat, .support .card, .feedback").forEach((el) => tilt(el, el.classList.contains("feat") ? 8 : 4));
+
+// Buttons: ripple on press, gentle magnet on hover.
+document.addEventListener("pointerdown", (e) => {
+  const b = e.target.closest(".btn, .cta");
+  if (!b || still) return;
+  const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2.2, s = document.createElement("span");
+  s.className = "ripple";
+  s.style.width = s.style.height = d + "px";
+  s.style.left = e.clientX - r.left - d / 2 + "px";
+  s.style.top = e.clientY - r.top - d / 2 + "px";
+  b.appendChild(s);
+  setTimeout(() => s.remove(), 700);
+});
+if (fine && !still) document.querySelectorAll(".hero .btn").forEach((b) => {
+  b.addEventListener("pointermove", (e) => {
+    const r = b.getBoundingClientRect();
+    b.style.setProperty("--mx2", `${(e.clientX - r.left - r.width / 2) * 0.18}px`);
+    b.style.setProperty("--my2", `${(e.clientY - r.top - r.height / 2) * 0.3}px`);
+  });
+  b.addEventListener("pointerleave", () => {
+    b.style.setProperty("--mx2", "0px");
+    b.style.setProperty("--my2", "0px");
+  });
+});
+$("dl").classList.add("shine");
+
+// Live caption demo: words pop in on the beat, the spoken word lights up.
+(() => {
+  const cap = document.querySelector(".demo .cap"), wave = document.querySelector(".demo .wave");
+  if (!cap) return;
+  for (let j = 0; j < 48; j++) {
+    const s = document.createElement("span");
+    s.style.setProperty("--j", j);
+    s.style.setProperty("--h", `${25 + Math.abs(Math.sin(j * 1.7)) * 75}%`);
+    wave.appendChild(s);
+  }
+  const lines = [["วันนี้", "จะมา", "สอน", "ทำซับ"], ["ตรงจังหวะ", "ทุกคำ", "แบบ", "อัตโนมัติ"], ["ลากคลิป", "มาวาง", "เสร็จ", "เลย!"]];
+  let li = 0;
+  const show = () => {
+    const words = lines[li++ % lines.length];
+    cap.classList.remove("out");
+    cap.innerHTML = words.map((w) => `<span class="w">${w}</span>`).join(" ");
+    const ws = [...cap.children];
+    if (still) return ws.forEach((w) => w.classList.add("show"));
+    ws.forEach((w, i) => setTimeout(() => {
+      ws.forEach((x) => x.classList.remove("now"));
+      w.classList.add("show", "now");
+    }, 250 + i * 420));
+    setTimeout(() => ws.forEach((x) => x.classList.remove("now")), 250 + ws.length * 420);
+    setTimeout(() => cap.classList.add("out"), 2700);
+    setTimeout(show, 3100);
+  };
+  show();
+})();
+
+// Supporters: count up, and confetti when someone taps the champion.
+function countUp() {
+  const el = $("bcount"), n = Number(el.dataset.n || 0);
+  if (!n || still) return;
+  const t0 = performance.now();
+  const step = (t) => {
+    const k = Math.min(1, (t - t0) / 1400), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = `ขอบคุณผู้สนับสนุน ${Math.round(n * e)} คน ยอดรวม ${baht(Math.round(Number(el.dataset.total || 0) * e))} ที่ช่วยให้ซับใสไปต่อ`;
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function confetti(x, y) {
+  if (still) return;
+  const colors = ["#ffd60a", "#0a84ff", "#5ac8fa", "#ff9f0a", "#5e5ce6", "#30d158", "#ff6b9a"];
+  for (let i = 0; i < 70; i++) {
+    const c = document.createElement("i"), a = Math.random() * Math.PI * 2, v = 120 + Math.random() * 260;
+    c.className = "confetti";
+    c.style.left = x + "px";
+    c.style.top = y + "px";
+    c.style.background = colors[i % colors.length];
+    c.style.setProperty("--x", `${Math.cos(a) * v}px`);
+    c.style.setProperty("--y", `${Math.sin(a) * v + 260}px`);
+    c.style.setProperty("--r", `${Math.random() * 720 - 360}deg`);
+    c.style.setProperty("--t", `${0.9 + Math.random() * 0.8}s`);
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 1800);
+  }
+}
+$("board").addEventListener("click", (e) => {
+  const p = e.target.closest(".p.r1:not(.empty)");
+  if (!p) return;
+  const r = p.getBoundingClientRect();
+  confetti(r.left + r.width / 2, r.top + 30);
+});
+
+// QR: tap to enlarge.
+document.addEventListener("click", (e) => {
+  const img = e.target.closest(".qr.card");
+  if (!img) return;
+  const lb = document.createElement("div");
+  lb.className = "lightbox";
+  lb.innerHTML = `<img src="${img.src}" alt="QR พร้อมเพย์" />`;
+  lb.onclick = () => {
+    lb.classList.remove("open");
+    setTimeout(() => lb.remove(), 350);
+  };
+  document.body.appendChild(lb);
+  requestAnimationFrame(() => lb.classList.add("open"));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5ac8fa"/><stop offset=".5" stop-color="#0a84ff"/><stop offset="1" stop-color="#5e5ce6"/></linearGradient>
+    <linearGradient id="glassFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity=".18"/></linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".5" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#fff" stop-opacity=".7"/></linearGradient>
+    <radialGradient id="shine" cx=".3" cy=".22" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd60a"/><stop offset="1" stop-color="#ff9f0a"/></linearGradient>
+
+    </defs><g>
+      <path d="M30 18 h60 a22 22 0 0 1 22 22 v28 a22 22 0 0 1 -22 22 h-30 l-18 16 v-16 h-12 a22 22 0 0 1 -22 -22 v-28 a22 22 0 0 1 22 -22z" fill="url(#blue)"/>
+      <path d="M30 20 h60 a20 20 0 0 1 20 20 v28 a20 20 0 0 1 -20 20 h-31 l-15 13 v-13 h-14 a20 20 0 0 1 -20 -20 v-28 a20 20 0 0 1 20 -20z" fill="none" stroke="url(#rim)" stroke-width="2.2"/>
+      <ellipse cx="38" cy="30" rx="18" ry="7" fill="url(#shine)" opacity=".8"/>
+      <g fill="#fff">
+        <rect x="27" y="47" width="5" height="12" rx="2.5" opacity=".75"/>
+        <rect x="36" y="40" width="5" height="26" rx="2.5" opacity=".85"/>
+        <rect x="45" y="44" width="5" height="18" rx="2.5" opacity=".9"/>
+      </g>
+      <rect x="55" y="48" width="38" height="10" rx="5" fill="#fff"/>
+      <rect x="80" y="48" width="13" height="10" rx="5" fill="url(#warm)"/>
+    </g></svg>
