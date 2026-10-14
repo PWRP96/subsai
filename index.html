@@ -299,7 +299,7 @@ nav .links a.on { color: var(--text); }
   <section id="supporters" class="reveal">
     <h2>กระดานผู้สนับสนุน</h2>
     <p class="sub" id="bcount">ขอบคุณทุกคนที่ช่วยให้ซับใสไปต่อ</p>
-    <div class="tiers-legend"><span class="tier gold">ทอง</span><span class="tier silver">เงิน</span><span class="tier bronze">ทองแดง</span><span>ทอง 1,000 บาทขึ้นไป · เงิน 300 บาทขึ้นไป</span></div>
+    <div class="tiers-legend"><span>🥇 🥈 🥉 ให้ 3 อันดับยอดรวมสูงสุด</span></div>
     <div class="board glass" id="board"><div class="empty-board">กำลังโหลด…</div></div>
     <div class="recent" id="recent"></div>
   </section>
@@ -366,10 +366,10 @@ const DEMO = {
   count: 7,
   total: 4850,
   supporters: [
-    { rank: 1, name: "พี่บอส ตัดต่อ", amount: 1500, tier: "gold", times: 3 }, { rank: 2, name: "Mint Studio", amount: 1000, tier: "gold", times: 1 },
-    { rank: 3, name: "ผู้ไม่ประสงค์ออกนาม", anonymous: true, amount: 800, tier: "silver", times: 1 }, { rank: 4, name: "น้องฟ้า", amount: 600, tier: "silver", times: 2 },
-    { rank: 5, name: "KenEdit", amount: 500, tier: "bronze", times: 1 }, { rank: 6, name: "ครูต้น", amount: 300, tier: "silver", times: 1 },
-    { rank: 7, name: "ผู้ไม่ประสงค์ออกนาม", anonymous: true, amount: 150, tier: "bronze", times: 1 },
+    { rank: 1, name: "พี่บอส ตัดต่อ", amount: 1500, times: 3 }, { rank: 2, name: "Mint Studio", amount: 1000, times: 1 },
+    { rank: 3, name: "ผู้ไม่ประสงค์ออกนาม", anonymous: true, amount: 800, times: 1 }, { rank: 4, name: "น้องฟ้า", amount: 600, times: 2 },
+    { rank: 5, name: "KenEdit", amount: 500, times: 1 }, { rank: 6, name: "ครูต้น", amount: 300, times: 1 },
+    { rank: 7, name: "ผู้ไม่ประสงค์ออกนาม", anonymous: true, amount: 150, times: 1 },
   ],
   recent: [
     { name: "พี่บอส ตัดต่อ", amount: 500, message: "ประหยัดเวลาทำซับไปเยอะมาก ขอบคุณครับ", at: new Date(Date.now() - 5400e3).toISOString() },
@@ -389,10 +389,10 @@ function render(d) {
   const top = [d.supporters[1], d.supporters[0], d.supporters[2]];
   const medal = ["🥈", "🥇", "🥉"], cls = ["r2", "r1", "r3"];
   const podium = top.map((p, i) => p
-    ? `<div class="p ${cls[i]}"><div class="medal">${medal[i]}</div><div class="nm">${nm(p)}</div><div class="amt">${baht(p.amount)}</div><span class="tier ${esc(p.tier)}">${TIER[p.tier] || ""}</span></div>`
+    ? `<div class="p ${cls[i]}"><div class="medal">${medal[i]}</div><div class="nm">${nm(p)}</div><div class="amt">${baht(p.amount)}</div></div>`
     : `<div class="p ${cls[i]} empty"><div class="medal">${medal[i]}</div><div class="nm">ว่าง</div></div>`).join("");
   const rows = d.supporters.slice(3).map((p) =>
-    `<div class="row"><span class="rk">${p.rank}</span><span class="nm">${nm(p)}</span>${p.times > 1 ? `<span class="times">${p.times} ครั้ง</span>` : ""}<span class="amt">${baht(p.amount)}</span><span class="tier ${esc(p.tier)}">${TIER[p.tier] || ""}</span></div>`).join("");
+    `<div class="row"><span class="rk">${p.rank}</span><span class="nm">${nm(p)}</span>${p.times > 1 ? `<span class="times">${p.times} ครั้ง</span>` : ""}<span class="amt">${baht(p.amount)}</span></div>`).join("");
   $("board").innerHTML = `<div class="podium">${podium}</div><div class="rows">${rows}</div>`;
   $("board").querySelectorAll(".row").forEach((r, i) => r.style.setProperty("--d", `${500 + i * 70}ms`));
   if ($("board").classList.contains("in")) countUp();
